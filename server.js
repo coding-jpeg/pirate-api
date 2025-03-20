@@ -1,31 +1,33 @@
 const express = require("express");
+const cors = require("cors");
+
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000; // Use dynamic port for deployment
 
-// Middleware to parse JSON data
-app.use(express.json());
+// ✅ Middleware
+app.use(cors()); // Moved before routes
+app.use(express.json()); // Parses JSON requests
 
-// Sample data: List of pirates
+// ✅ Sample data: List of pirates
 let pirates = [
   { id: 1, name: "Luffy", bounty: 3000000000 },
   { id: 2, name: "Zoro", bounty: 1500000000 },
-  { id: 3, name: "sanji", bounty: 1000000000 },
+  { id: 3, name: "Sanji", bounty: 1000000000 },
 ];
 
-// GET: Fetch all pirates
+// ✅ Root Route
+app.get("/", (req, res) => {
+  res.send("Welcome to the Pirate API! 🏴‍☠️");
+});
+
+// ✅ GET: Fetch all pirates
 app.get("/pirates", (req, res) => {
   res.json(pirates);
 });
 
-// POST: Add a new pirate
-app.post("/pirates", (req, res) => {
-  const newPirate = req.body;
-  pirates.push(newPirate);
-  res.json({ message: "Pirate added!", newPirate });
-});
-// GET: Fetch a pirate by ID
+// ✅ GET: Fetch a pirate by ID
 app.get("/pirates/:id", (req, res) => {
-  const pirateId = parseInt(req.params.id); // Convert id to a number
+  const pirateId = parseInt(req.params.id);
   const pirate = pirates.find((p) => p.id === pirateId);
 
   if (pirate) {
@@ -34,7 +36,15 @@ app.get("/pirates/:id", (req, res) => {
     res.status(404).json({ message: "Pirate not found!" });
   }
 });
-// DELETE: Remove a pirate by ID
+
+// ✅ POST: Add a new pirate
+app.post("/pirates", (req, res) => {
+  const newPirate = req.body;
+  pirates.push(newPirate);
+  res.json({ message: "Pirate added!", newPirate });
+});
+
+// ✅ DELETE: Remove a pirate by ID
 app.delete("/pirates/:id", (req, res) => {
   const pirateId = parseInt(req.params.id);
   const index = pirates.findIndex((p) => p.id === pirateId);
@@ -46,16 +56,8 @@ app.delete("/pirates/:id", (req, res) => {
     res.status(404).json({ message: "Pirate not found!" });
   }
 });
-const cors = require("cors");
-app.use(cors());
 
-
-
-// Start the server
-app.listen(PORT, '0.0.0.0', () => {
+// ✅ Start the server
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
-app.get("/", (req, res) => {
-  res.send("Welcome to the Pirate API! 🏴‍☠️");
-});
-
